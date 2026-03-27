@@ -1,0 +1,160 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Special+Elite&display=swap");
+
+:root {
+  --black:      #000000;
+  --deep:       #080000;
+  --blood:      #8b0000;
+  --crimson:    #cc0000;
+  --hot-red:    #ff1a1a;
+  --lava:       #ff4500;
+  --ember:      #ff6a00;
+  --ash:        #e8d5d5;
+  --faint:      rgba(232, 200, 200, 0.65);
+  --glass:      rgba(20, 2, 2, 0.75);
+  --shadow:     0 32px 80px rgba(0, 0, 0, 0.9);
+  --glow-sm:    0 0 8px rgba(220, 0, 0, 0.6);
+  --glow-lg:    0 0 20px rgba(200, 0, 0, 0.4), 0 0 40px rgba(180, 0, 0, 0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(180, 20, 0, 0.55) 0%, transparent 55%),
+    radial-gradient(ellipse at 20% 90%, rgba(120, 5, 0, 0.35) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 85%, rgba(140, 10, 0, 0.3) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 30%, rgba(60, 0, 0, 0.4) 0%, transparent 60%),
+    linear-gradient(180deg, #000000 0%, #0a0000 40%, #050000 100%);
+  color: var(--ash);
+  font-family: "Cormorant Garamond", Georgia, serif;
+}
+
+/* ── Global Atmosphere Layers ── */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.45;
+  animation: scanDrift 12s linear infinite;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.35;
+  animation: grainShift 0.4s steps(1) infinite;
+}
+
+.lava-floor {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35vh;
+  background: radial-gradient(ellipse at 50% 100%,
+    rgba(220, 40, 0, 0.35) 0%,
+    rgba(160, 10, 0, 0.2) 40%,
+    transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: lavaBreath 6s ease-in-out infinite;
+}
+
+/* Spores */
+.spores {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spores span {
+  position: absolute;
+  bottom: -5vh;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 6px rgba(255, 200, 200, 0.9);
+  animation: floatSpore linear infinite;
+}
+
+@keyframes floatSpore {
+  0%   { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(-108vh) translateX(2rem) scale(1.2); opacity: 0; }
+}
+
+@keyframes scanDrift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 8px; }
+}
+
+@keyframes grainShift {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-3px, 2px); }
+  40%  { transform: translate(2px, -1px); }
+  60%  { transform: translate(-1px, 3px); }
+  80%  { transform: translate(3px, -2px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes lavaBreath {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}
+
+/* ── Typography & UI ── */
+.special-font {
+  font-family: "Special Elite", monospace;
+}
+
+.cinzel-font {
+  font-family: "Cinzel", serif;
+}
+
+.creepy-title {
+  font-family: "Cinzel", serif;
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  color: var(--hot-red);
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 3px 3px 0 #000;
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.creepy-button {
+  padding: 1rem 2rem;
+  font-family: "Special Elite", monospace;
+  font-size: 1.2rem;
+  background: linear-gradient(160deg, var(--blood), var(--deep));
+  color: var(--ash);
+  border: 1px solid var(--crimson);
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.creepy-button:hover {
+  filter: brightness(1.3);
+  box-shadow: 0 0 30px var(--crimson);
+  transform: translateY(-5px);
+}
