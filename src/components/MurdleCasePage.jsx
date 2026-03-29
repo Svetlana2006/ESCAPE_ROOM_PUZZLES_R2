@@ -27,12 +27,12 @@ const locations = [
 const clues = [
   'The crime did not happen in the Server Room or Parking Basement.',
   'The knife was not used by the culprit.',
-  'Zoya was seen in the Control Office, not at the crime scene. Ari was seen treating victims with syringes.',
+  'Penelope was seen in the Control Office, not at the crime scene. Ari was seen to be treating victims with syringes. (one misleading clue)',
   'The person who used the Poison vial was in the Hotel Room.',
-  'Kabir never entered the Lab Chamber.',
+  'Eleven never entered the Lab Chamber.',
   'The Syringe was used in the Lab Chamber.',
-  'Raghav was handling the USB drive, not any physical weapon.',
-  'Meera was not in the Lab Chamber.',
+  'Hamza was handling the USB drive, not any physical weapon.',
+  'JoeyBing was not in the Lab Chamber.',
   'The culprit is someone who had direct access to experiments.',
   'Only one person had access to both the Lab Chamber and bio-experimental tools.'
 ];
