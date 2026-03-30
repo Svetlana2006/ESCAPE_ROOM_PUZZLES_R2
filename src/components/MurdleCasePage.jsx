@@ -85,11 +85,13 @@ const cycleMark = (value) => {
 
 const assetExtensions = ['png', 'jpg', 'jpeg', 'webp', 'svg'];
 
+const getAssetPath = (path) => path.startsWith('/') ? import.meta.env.BASE_URL + path.slice(1) : path;
+
 const candidatePaths = (folder, id) => [
-  ...assetExtensions.map((extension) => `/images/murdle/${folder}/${id}.${extension}`),
-  ...assetExtensions.map((extension) => `/images/${folder}/${id}.${extension}`),
-  ...assetExtensions.map((extension) => `/images/murdle/${id}.${extension}`),
-  ...assetExtensions.map((extension) => `/images/${id}.${extension}`)
+  ...assetExtensions.map((extension) => getAssetPath(`/images/murdle/${folder}/${id}.${extension}`)),
+  ...assetExtensions.map((extension) => getAssetPath(`/images/${folder}/${id}.${extension}`)),
+  ...assetExtensions.map((extension) => getAssetPath(`/images/murdle/${id}.${extension}`)),
+  ...assetExtensions.map((extension) => getAssetPath(`/images/${id}.${extension}`))
 ];
 
 const downloadBlobFromUrl = async (url, filename) => {

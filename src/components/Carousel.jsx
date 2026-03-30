@@ -35,13 +35,15 @@ const Carousel = ({ images, title }) => {
         transform: `translateX(-${index * 100}%)`,
         height: '100%'
       }}>
-        {images.map((img, i) => (
+        {images.map((img, i) => {
+          const imgSrc = img.startsWith('/') ? import.meta.env.BASE_URL + img.slice(1) : img;
+          return (
           <div key={i} style={{ 
             minWidth: '100%', 
             height: '100%', 
             position: 'relative'
           }}>
-            <img src={img} alt={`Slide ${i}`} style={{ 
+            <img src={imgSrc} alt={`Slide ${i}`} style={{ 
               width: '100%', 
               height: '100%', 
               objectFit: 'contain',
@@ -49,7 +51,7 @@ const Carousel = ({ images, title }) => {
               opacity: 0.9
             }} />
           </div>
-        ))}
+        )})}
       </div>
       
       {/* Navigation Arrows */}
