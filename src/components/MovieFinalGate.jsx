@@ -85,11 +85,11 @@ const MovieFinalGate = ({ movieNames, expectedKey, onCorrect }) => {
             }}>
               <div className="special-font" style={{
                 color: 'var(--crimson)',
-                fontSize: '0.75rem',
+                fontSize: '0.9rem',
                 letterSpacing: '0.2em',
                 marginBottom: '0.45rem'
               }}>
-                MOVIE {index + 1}
+                {'129434'[index]}
               </div>
               <div className="cinzel-font" style={{
                 color: '#fff',

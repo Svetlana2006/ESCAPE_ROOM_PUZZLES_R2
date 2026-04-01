@@ -131,6 +131,9 @@ const downloadSelectedAssets = async (selection) => {
         await downloadBlobFromUrl(assetPath, filename);
         downloaded.push(request.id);
         success = true;
+        // Add artificial delay to give the browser time to process the download
+        // and avoid triggering the 'multiple downloads blocked' protection
+        await new Promise((resolve) => setTimeout(resolve, 800));
         break;
       } catch {
         continue;
