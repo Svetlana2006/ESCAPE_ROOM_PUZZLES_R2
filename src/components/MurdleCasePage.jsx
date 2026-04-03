@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import JSZip from 'jszip';
 
 const suspects = [
   { id: 'ari', name: 'Ari', detail: "Dr. Ira's alias" },
@@ -94,14 +95,17 @@ const candidatePaths = (folder, id) => [
   ...assetExtensions.map((extension) => getAssetPath(`/images/${id}.${extension}`))
 ];
 
-const downloadBlobFromUrl = async (url, filename) => {
-  const response = await fetch(url);
+const fetchAssetBlob = async (url) => {
+  const response = await fetch(url, { cache: 'no-store' });
 
   if (!response.ok) {
     throw new Error('Asset not found');
   }
 
-  const blob = await response.blob();
+  return response.blob();
+};
+
+const downloadBlob = (blob, filename) => {
   const objectUrl = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = objectUrl;
@@ -109,7 +113,26 @@ const downloadBlobFromUrl = async (url, filename) => {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  URL.revokeObjectURL(objectUrl);
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+};
+
+const resolveAssetRequest = async (request) => {
+  for (const assetPath of candidatePaths(request.folder, request.id)) {
+    try {
+      const blob = await fetchAssetBlob(assetPath);
+      const filename = assetPath.split('/').pop();
+
+      return {
+        ...request,
+        blob,
+        filename
+      };
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
 };
 
 const downloadSelectedAssets = async (selection) => {
@@ -121,28 +144,24 @@ const downloadSelectedAssets = async (selection) => {
 
   const downloaded = [];
   const missing = [];
+  const zip = new JSZip();
 
   for (const request of requests) {
-    let success = false;
+    const asset = await resolveAssetRequest(request);
 
-    for (const assetPath of candidatePaths(request.folder, request.id)) {
-      try {
-        const filename = assetPath.split('/').pop();
-        await downloadBlobFromUrl(assetPath, filename);
-        downloaded.push(request.id);
-        success = true;
-        // Add artificial delay to give the browser time to process the download
-        // and avoid triggering the 'multiple downloads blocked' protection
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        break;
-      } catch {
-        continue;
-      }
-    }
-
-    if (!success) {
+    if (!asset) {
       missing.push(request.id);
+      continue;
     }
+
+    zip.file(`${request.folder}-${asset.filename}`, asset.blob);
+    downloaded.push(request.id);
+  }
+
+  if (downloaded.length > 0) {
+    const bundleBlob = await zip.generateAsync({ type: 'blob' });
+    const bundleName = `murdle-evidence-${selection.suspect}-${selection.weapon}-${selection.location}.zip`;
+    downloadBlob(bundleBlob, bundleName);
   }
 
   return { downloaded, missing };
@@ -267,16 +286,7 @@ const MurdleCasePage = ({ onSolved }) => {
 
     setSubmitting(true);
     setError('');
-
-    const result = await downloadSelectedAssets(selection);
-
-    if (result.downloaded.length > 0 && result.missing.length === 0) {
-      setDownloadStatus('Selected files downloaded successfully.');
-    } else if (result.downloaded.length > 0) {
-      setDownloadStatus('Some selected files downloaded. Upload the remaining assets later to complete auto-downloads.');
-    } else {
-      setDownloadStatus('Download hooks are ready. Add the matching files in images to enable automatic downloads.');
-    }
+    setDownloadStatus('');
 
     const solved =
       selection.suspect === correctAnswer.suspect &&
@@ -287,6 +297,16 @@ const MurdleCasePage = ({ onSolved }) => {
       setError('That theory does not close the case. Re-check the clues and your board.');
       setSubmitting(false);
       return;
+    }
+
+    const result = await downloadSelectedAssets(selection);
+
+    if (result.downloaded.length > 0 && result.missing.length === 0) {
+      setDownloadStatus('Case closed. Your three evidence images were bundled into one download.');
+    } else if (result.downloaded.length > 0) {
+      setDownloadStatus('Case closed, but some evidence images are still missing from the site files.');
+    } else {
+      setDownloadStatus('Case closed, but no evidence images were available to bundle yet.');
     }
 
     setTimeout(() => {
